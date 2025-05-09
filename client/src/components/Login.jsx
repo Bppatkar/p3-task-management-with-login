@@ -1,6 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ onLogin }) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Here you would typically validate credentials and call your API
+    // For now, we'll just simulate a successful login
+    onLogin();
+    navigate("/");
+  };
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-purple-600">
       <div className="bg-white bg-opacity-80 rounded-2xl shadow-xl p-8 max-w-md w-full backdrop-blur-lg">

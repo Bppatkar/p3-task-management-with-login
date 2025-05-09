@@ -57,14 +57,16 @@ const Register = () => {
             >
               Register
             </button>
-            <Link
-              to={"/login"}
-              className="text-sm text-indigo-600 hover:text-indigo-800 transition duration-300"
-            >
+            <p className="text-md text-gray-600 ml-1">
               Already have an account?
-            </Link>
+              <Link
+                to={"/login"}
+                className="text-sm text-indigo-600 hover:text-indigo-800 transition duration-300 ml-2"
+              >
+                Login
+              </Link>
+            </p>
           </div>
-         
         </form>
       </div>
     </div>
