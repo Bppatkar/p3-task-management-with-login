@@ -1,10 +1,15 @@
+import Home from "./components/Home";
+import { Routes, Route } from "react-router-dom";
+import Login from "./components/Login";
+import Register from "./components/Register";
+
 function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline text-red-500 text-center ">
-        Task Management
-      </h1>
-    </>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
   );
 }
 
