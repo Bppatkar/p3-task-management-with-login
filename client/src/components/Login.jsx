@@ -11,6 +11,7 @@ const Login = ({ onLogin }) => {
     navigate("/");
   };
   return (
+    
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-purple-600">
       <div className="bg-white bg-opacity-80 rounded-2xl shadow-xl p-8 max-w-md w-full backdrop-blur-lg">
         <h1 className="text-4xl font-extrabold mb-6 text-gray-900 text-center">

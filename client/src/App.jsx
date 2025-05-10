@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet, useLocation } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register.jsx";
 import Navbar from "./components/Navbar.jsx";
@@ -8,6 +8,8 @@ import { useState } from "react";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
+  const hideAuthButtons = ["/login", "/register"].includes(location.pathname);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -18,38 +20,22 @@ function App() {
   };
 
   return (
-    <Routes>
-      {/* Routes with navbar */}
-      <Route
-        path="/"
-        element={
-          <LayoutWithNavbar
-            isLoggedIn={isLoggedIn}
-            onLogout={handleLogout}
-          />
-        }
-      >
-        <Route index element={<Home isLoggedIn={isLoggedIn} />} />
-        <Route path="/add-task" element={<AddTask />} />
-      </Route>
-
-      {/* Routes without navbar */}
-      <Route path="/login" element={<Login onLogin={handleLogin} />} />
-      <Route path="/register" element={<Register />} />
-    </Routes>
-  );
-}
-
-function LayoutWithNavbar({ isLoggedIn, onLogout }) {
-  return (
     <div className="min-h-screen flex flex-col">
-      <Navbar isLoggedIn={isLoggedIn} onLogout={onLogout} />
-      <main className="flex-grow pt-16">
-        <Outlet />
+      <Navbar
+        isLoggedIn={isLoggedIn}
+        onLogout={handleLogout}
+        hideAuthButtons={hideAuthButtons}
+      />
+      <main className="flex-grow ">
+        <Routes>
+          <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
+          <Route path="/add-task" element={<AddTask />} />
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
       </main>
     </div>
   );
 }
 
 export default App;
-
