@@ -1,13 +1,37 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Register = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    profilePic: "",
+    coverImage: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission here
+    // You would typically save the task to state or send to an API
+    // Then redirect to home page or show success message
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-purple-600">
       <div className="bg-white bg-opacity-80 rounded-2xl shadow-xl p-8 max-w-md w-full backdrop-blur-lg">
         <h1 className="text-4xl font-extrabold mb-6 text-gray-900 text-center">
           Register
         </h1>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-5">
             <label
               htmlFor="name"
@@ -18,10 +42,15 @@ const Register = () => {
             <input
               type="text"
               id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Name"
+              required
             />
           </div>
+
           <div className="mb-5">
             <label
               htmlFor="email"
@@ -32,11 +61,16 @@ const Register = () => {
             <input
               type="email"
               id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Email address"
+              required
             />
           </div>
-          <div className="mb-8">
+
+          <div className="mb-5">
             <label
               htmlFor="password"
               className="block text-gray-800 text-sm font-semibold mb-2"
@@ -46,10 +80,49 @@ const Register = () => {
             <input
               type="password"
               id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Password"
+              required
             />
           </div>
+
+          <div className="mb-5">
+            <label
+              htmlFor="profilePic"
+              className="block text-gray-800 text-sm font-semibold mb-2"
+            >
+              Profile Picture URL (Optional)
+            </label>
+            <input
+              type="file"
+              id="profilePic"
+              name="profilePic"
+              value={formData.profilePic}
+              onChange={handleChange}
+              className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-8">
+            <label
+              htmlFor="coverImage"
+              className="block text-gray-800 text-sm font-semibold mb-2"
+            >
+              Cover Image URL (Optional)
+            </label>
+            <input
+              type="file"
+              id="coverImage"
+              name="coverImage"
+              value={formData.coverImage}
+              onChange={handleChange}
+              className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
           <div className="flex items-center justify-between">
             <button
               type="submit"
@@ -74,3 +147,4 @@ const Register = () => {
 };
 
 export default Register;
+
