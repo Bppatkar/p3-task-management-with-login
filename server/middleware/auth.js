@@ -9,11 +9,19 @@ const verifyToken = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized Access",
+        message: "Unauthorized Access || NO Token Provided",
       });
     }
     const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decodeToken._id);
+    const user = await User.findById(decodeToken._id).select("-password");
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: " User Not Found",
+      });
+    }
+
+    req.user = user;
     next();
   } catch (error) {
     console.log("Error in Verifying Token: ", error.message);

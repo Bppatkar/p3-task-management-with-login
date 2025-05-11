@@ -1,16 +1,35 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Home from "./components/Home.jsx";
 import AddTask from "./components/AddTask.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const location = useLocation();
   const hideAuthButtons = ["/login", "/register"].includes(location.pathname);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser));
+      setIsLoggedIn(true);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (!loading && !isLoggedIn && !hideAuthButtons) {
+      navigate("/login");
+    }
+  }, [loading, isLoggedIn, hideAuthButtons, navigate]);
 
   const handleLogin = (userData) => {
     setIsLoggedIn(true);
@@ -26,11 +45,16 @@ function App() {
           : `${import.meta.env.VITE_BACKEND_URL}${userData.coverImage}`
         : null,
     });
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", userData.token);
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUser({});
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
