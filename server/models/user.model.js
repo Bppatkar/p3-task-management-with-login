@@ -8,24 +8,41 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      minlength: [2, "Name must be at least 2 characters"],
     },
     password: {
       type: String,
       required: true,
+      minlength: [6, "Password must be at least 6 characters"],
+      select: false,
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       unique: true,
+      trim: true,
+      lowercase: true,
+      validate: {
+        validator: (v) => /^\S+@\S+\.\S+$/.test(v),
+        message: "Invalid email format",
+      },
     },
     profilePic: {
       type: String,
       required: false,
+      default: null,
     },
     coverImage: {
       type: String,
       required: false,
+      default: null,
     },
+    task: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Task",
+      },
+    ],
   },
   { timestamps: true }
 );

@@ -26,7 +26,9 @@ app.use("/public", express.static(path.join(process.cwd(), "public")));
 
 // Routes
 import userRoutes from "./routes/user.routes.js";
+import userTasks from "./routes/task.route.js";
 app.use("/api/v1", userRoutes);
+app.use("/api/v1/tasks", userTasks);
 
 app.listen(PORT, () => {
   connectDB();
