@@ -1,28 +1,77 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    profilePic: "",
-    coverImage: "",
+    profilePic: null,
+    coverImage: null,
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value,
-    }));
+    if (files && files.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files[0],
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission here
-    // You would typically save the task to state or send to an API
-    // Then redirect to home page or show success message
+    setLoading(true);
+    setError("");
+    try {
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("password", formData.password);
+      if (formData.profilePic) {
+        formDataToSend.append("profilePic", formData.profilePic);
+      }
+      if (formData.coverImage) {
+        formDataToSend.append("coverImage", formData.coverImage);
+      }
+
+      axios
+        .post(
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/register`,
+          formDataToSend,
+          {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 200 || res.status === 201) {
+            navigate("/login");
+          } else {
+            setError("Something went wrong");
+          }
+        })
+        .catch((error) => {
+          setError(error?.response?.data?.message || error.message);
+        })
+        .finally(() => setLoading(false));
+    } catch (error) {
+      setError(error?.response?.data?.message || error.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,7 +80,11 @@ const Register = () => {
         <h1 className="text-4xl font-extrabold mb-6 text-gray-900 text-center">
           Register
         </h1>
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={handleSubmit}
+          method="POST"
+          encType="multipart/form-data"
+        >
           <div className="mb-5">
             <label
               htmlFor="name"
@@ -100,7 +153,6 @@ const Register = () => {
               type="file"
               id="profilePic"
               name="profilePic"
-              value={formData.profilePic}
               onChange={handleChange}
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -117,7 +169,6 @@ const Register = () => {
               type="file"
               id="coverImage"
               name="coverImage"
-              value={formData.coverImage}
               onChange={handleChange}
               className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -147,4 +198,3 @@ const Register = () => {
 };
 
 export default Register;
-
