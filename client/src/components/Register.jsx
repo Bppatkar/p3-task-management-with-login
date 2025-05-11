@@ -60,6 +60,7 @@ const Register = () => {
         .then((res) => {
           if (res.status === 200 || res.status === 201) {
             navigate("/login");
+            // console.log(formData);
           } else {
             setError("Something went wrong");
           }

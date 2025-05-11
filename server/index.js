@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 import connectDB from "./db/db.js";
@@ -19,6 +20,9 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Update your static file serving
+app.use("/public", express.static(path.join(process.cwd(), "public")));
 
 // Routes
 import userRoutes from "./routes/user.routes.js";

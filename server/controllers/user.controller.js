@@ -53,6 +53,8 @@ const registerUser = async (req, res) => {
         });
       }
 
+      console.log("Files uploaded successfully");
+
       const { name, password, email } = req.body;
       if (!name || !password || !email) {
         return res.status(400).json({
@@ -63,34 +65,43 @@ const registerUser = async (req, res) => {
 
       const userExists = await User.findOne({ email });
       if (userExists) {
+        await deleteFiles([
+          req.files?.profilePic?.[0]?.path,
+          req.files?.coverImage?.[0]?.path,
+        ]);
         return res.status(409).json({
           success: false,
           message: "User with this email already exists",
         });
       }
 
-      const profilePicPath = req.files?.profilePic?.[0]?.path || "";
-      const coverImagePath = req.files?.coverImage?.[0]?.path || "";
+      const profilePicPath = req.files?.profilePic?.[0]?.filename;
+      const coverImagePath = req.files?.coverImage?.[0]?.filename;
 
       const newUser = await User.create({
         name,
         password,
         email,
-        profilePic: profilePicPath,
-        coverImage: coverImagePath,
+        profilePic: profilePicPath ? `/public/${profilePicPath}` : null,
+        coverImage: coverImagePath ? `/public/${coverImagePath}` : null,
       });
 
       if (!newUser) {
-        await deleteFiles([profilePicPath, coverImagePath]);
+        await deleteFiles([
+          req.files?.profilePic?.[0]?.path,
+          req.files?.coverImage?.[0]?.path,
+        ]);
         return res.status(500).json({
           success: false,
           message: "Failed to register user",
         });
       }
 
-      return res
-        .status(201)
-        .json({ success: true, message: "User Registered Successfully " });
+      return res.status(201).json({
+        success: true,
+        message: "User Registered Successfully ",
+        user: newUser,
+      });
     });
   } catch (error) {
     console.error("Error in Registering User: ", error.message);
@@ -104,6 +115,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    // console.log(req.body);
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -111,6 +123,8 @@ const loginUser = async (req, res) => {
       });
     }
     const user = await User.findOne({ email });
+    // console.log(user.profilePic);
+
     if (!user || !(await user.isPasswordCorrect(password))) {
       return res.status(400).json({
         success: false,
@@ -125,6 +139,23 @@ const loginUser = async (req, res) => {
         message: "Failed to generate token",
       });
     }
+
+    // Convert local paths to accessible URLs
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    // console.log(baseUrl);
+    const profilePicUrl = user.profilePic
+      ? `${req.protocol}://${req.get("host")}/public/${path.basename(
+          user.profilePic
+        )}`
+      : null;
+    // console.log("profilePicUrl:-  ", profilePicUrl);
+    const coverImageUrl = user.coverImage
+      ? `${req.protocol}://${req.get("host")}/public/${path.basename(
+          user.coverImage
+        )}`
+      : null;
+
+    // console.log("coverImageUrl: - ", coverImageUrl);
 
     const options = {
       httpOnly: true,
@@ -143,12 +174,15 @@ const loginUser = async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
-          profilePic: user.profilePic,
-          coverImage: user.coverImage,
+          profilePic: profilePicUrl,
+          coverImage: coverImageUrl,
         },
       });
   } catch (error) {
-    console.error("Error in Logging In User: ", error.message);
+    console.error(
+      "Error in Logging In User {from login controller}: ",
+      error.message
+    );
     return res.status(500).json({
       success: false,
       message: "Internal server error",

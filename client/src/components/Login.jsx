@@ -6,16 +6,16 @@ const Login = ({ onLogin }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -23,7 +23,7 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/login`,
@@ -31,17 +31,19 @@ const Login = ({ onLogin }) => {
         {
           withCredentials: true,
           headers: {
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (response.status === 200) {
-        onLogin();
+        onLogin(response.data.user);
         navigate("/");
       }
     } catch (error) {
-      setError(error?.response?.data?.message || "Login failed. Please try again.");
+      setError(
+        error?.response?.data?.message || "Login failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -53,7 +55,7 @@ const Login = ({ onLogin }) => {
         <h1 className="text-4xl font-extrabold mb-6 text-gray-900 text-center">
           Login
         </h1>
-        
+
         {/* Error Message Display */}
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
@@ -80,7 +82,7 @@ const Login = ({ onLogin }) => {
               required
             />
           </div>
-          
+
           <div className="mb-8">
             <label
               htmlFor="password"
@@ -99,7 +101,7 @@ const Login = ({ onLogin }) => {
               required
             />
           </div>
-          
+
           <div className="flex items-center justify-between">
             <button
               type="submit"
@@ -117,7 +119,7 @@ const Login = ({ onLogin }) => {
               Forgot Password?
             </a>
           </div>
-          
+
           <p className="mt-6 text-center text-sm text-gray-600">
             Do not have an account?{" "}
             <Link

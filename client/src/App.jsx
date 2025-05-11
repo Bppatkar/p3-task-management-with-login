@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register.jsx";
 import Navbar from "./components/Navbar.jsx";
@@ -7,16 +7,30 @@ import AddTask from "./components/AddTask.jsx";
 import { useState } from "react";
 
 function App() {
+  const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const hideAuthButtons = ["/login", "/register"].includes(location.pathname);
 
-  const handleLogin = () => {
+  const handleLogin = (userData) => {
     setIsLoggedIn(true);
+    setUser({
+      profilePic: userData.profilePic
+        ? userData.profilePic.startsWith("http")
+          ? userData.profilePic
+          : `${import.meta.env.VITE_BACKEND_URL}${userData.profilePic}`
+        : null,
+      coverImage: userData.coverImage
+        ? userData.coverImage.startsWith("http")
+          ? userData.coverImage
+          : `${import.meta.env.VITE_BACKEND_URL}${userData.coverImage}`
+        : null,
+    });
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setUser({});
   };
 
   return (
@@ -25,6 +39,7 @@ function App() {
         isLoggedIn={isLoggedIn}
         onLogout={handleLogout}
         hideAuthButtons={hideAuthButtons}
+        user={user}
       />
       <main className="flex-grow ">
         <Routes>
