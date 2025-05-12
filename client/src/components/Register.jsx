@@ -66,7 +66,12 @@ const Register = () => {
           }
         })
         .catch((error) => {
-          setError(error?.response?.data?.message || error.message);
+          let errorMessage = error?.response?.data?.message || error.message;
+          if (error.response?.status === 409) {
+            errorMessage =
+              "This email is already registered. Please use a different email or login.";
+          }
+          setError(errorMessage);
         })
         .finally(() => setLoading(false));
     } catch (error) {

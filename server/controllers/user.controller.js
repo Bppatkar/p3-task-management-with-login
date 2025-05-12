@@ -65,10 +65,14 @@ const registerUser = async (req, res) => {
 
       const userExists = await User.findOne({ email });
       if (userExists) {
-        await deleteFiles([
-          req.files?.profilePic?.[0]?.path,
-          req.files?.coverImage?.[0]?.path,
-        ]);
+        if (req.files) {
+          await deleteFiles(
+            [
+              req.files?.profilePic?.[0]?.path,
+              req.files?.coverImage?.[0]?.path,
+            ].filter(Boolean)
+          );
+        }
         return res.status(409).json({
           success: false,
           message: "User with this email already exists",
@@ -125,10 +129,28 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     // console.log(user.profilePic);
 
-    if (!user || !(await user.isPasswordCorrect(password))) {
-      return res.status(400).json({
+    if (!user) {
+      return res.status(401).json({
         success: false,
-        message: "Incorrect email or password",
+        message: "Invalid credentials", // Generic message for security
+      });
+    }
+
+    let isPasswordValid;
+    try {
+      isPasswordValid = await user.isPasswordCorrect(password);
+    } catch (error) {
+      console.error("Password verification error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Authentication error",
+      });
+    }
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
       });
     }
 
@@ -190,6 +212,42 @@ const loginUser = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Both fields are mandatory to fill",
+      });
+    }
+    const user = await User.findById(req.user._id);
+
+    // veryfy old pass
+    const isPasswordValid = await user.isPasswordCorrect(oldPassword);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Old password is incorrect",
+      });
+    }
+
+    // setting new password
+    user.password = newPassword;
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.log("Error in changing password: ", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 const logoutUser = async (req, res) => {
   try {
     return res.status(200).clearCookie("token").json({
@@ -205,4 +263,4 @@ const logoutUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, logoutUser };
+export { registerUser, loginUser, logoutUser, changePassword };

@@ -41,11 +41,36 @@ const Login = ({ onLogin }) => {
         navigate("/");
       }
     } catch (error) {
-      setError(
-        error?.response?.data?.message || "Login failed. Please try again."
-      );
+      let errorMessage = "Login failed. Please try again.";
+      if (error.response) {
+        if (error.response.status === 401) {
+          errorMessage = "Invalid email or password";
+        } else if (error.response.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChangePass = () => {
+    try {
+      const response = axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/v1/change-pass`,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error) {
+      setError(
+        error?.response?.data?.message ||
+          "Changed Password failed.. Please try again."
+      );
     }
   };
 
@@ -112,12 +137,13 @@ const Login = ({ onLogin }) => {
             >
               {loading ? "Logging in..." : "Login"}
             </button>
-            <a
-              href="#"
+            <Link
+              to="/change-pass"
               className="text-sm text-indigo-600 hover:text-indigo-800 transition duration-300"
+              onChange={handleChangePass}
             >
               Forgot Password?
-            </a>
+            </Link>
           </div>
 
           <p className="mt-6 text-center text-sm text-gray-600">

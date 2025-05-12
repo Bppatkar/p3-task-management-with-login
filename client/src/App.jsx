@@ -1,10 +1,13 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import Login from "./components/Login";
-import Register from "./components/Register.jsx";
 import Navbar from "./components/Navbar.jsx";
-import Home from "./components/Home.jsx";
-import AddTask from "./components/AddTask.jsx";
 import { useEffect, useState } from "react";
+
+const Login = lazy(() => import("./components/Login"));
+const Register = lazy(() => import("./components/Register.jsx"));
+const Home = lazy(() => import("./components/Home.jsx"));
+const AddTask = lazy(() => import("./components/AddTask.jsx"));
+const ChangedPassword = lazy(() => import("./components/ChangedPassword.jsx"));
 
 function App() {
   const [user, setUser] = useState(null);
@@ -66,15 +69,19 @@ function App() {
         user={user}
       />
       <main className="flex-grow ">
-        <Routes>
-          <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
-          <Route path="/add-task" element={<AddTask />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
+            <Route path="/add-task" element={<AddTask />} />
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/change-pass" element={<ChangedPassword />} />
+          </Routes>
+        </Suspense>
       </main>
     </div>
   );
 }
 
 export default App;
+

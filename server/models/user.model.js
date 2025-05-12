@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
       minlength: [6, "Password must be at least 6 characters"],
-      select: false,
+      
     },
     email: {
       type: String,
@@ -55,8 +55,17 @@ UserSchema.pre("save", async function (next) {
 });
 
 // Comparing Password
+// In user.model.js
 UserSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
+  try {
+    if (!password || !this.password) {
+      throw new Error("Missing password or hash for comparison");
+    }
+    return await bcrypt.compare(password, this.password);
+  } catch (error) {
+    console.error("Password comparison error:", error);
+    throw error; // Rethrow to handle in controller
+  }
 };
 
 // generating token
