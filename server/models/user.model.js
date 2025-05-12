@@ -37,7 +37,7 @@ const UserSchema = new mongoose.Schema(
       required: false,
       default: null,
     },
-    task: [
+    tasks: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Task",
@@ -78,3 +78,4 @@ UserSchema.methods.generateToken = function () {
 };
 
 export const User = mongoose.model("User", UserSchema);
+
