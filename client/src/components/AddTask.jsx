@@ -28,6 +28,53 @@ const AddTask = () => {
               required
             />
           </div>
+          <div className="mb-5 grid grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="startingDate"
+                className="block text-gray-800 text-sm font-semibold mb-2"
+              >
+                Starting Date
+              </label>
+              <input
+                type="date"
+                id="startingDate"
+                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="dueDate"
+                className="block text-gray-800 text-sm font-semibold mb-2"
+              >
+                Due Date
+              </label>
+              <input
+                type="date"
+                id="dueDate"
+                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+          </div>
+          <div className="mb-5">
+            <label
+              htmlFor="status"
+              className="block text-gray-800 text-sm font-semibold mb-2"
+            >
+              Status
+            </label>
+            <select
+              id="status"
+              className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="pending">Pending</option>
+              <option value="inProgress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
           <div className="mb-5">
             <label
               htmlFor="description"
@@ -65,3 +112,4 @@ const AddTask = () => {
 };
 
 export default AddTask;
+

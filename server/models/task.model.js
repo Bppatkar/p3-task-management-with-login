@@ -28,11 +28,7 @@ const TaskSchema = new mongoose.Schema(
         message: "Due date must be after starting date",
       },
     },
-    description: {
-      type: String,
-      required: [true, "Description is required"],
-      trim: true,
-    },
+
     status: {
       type: String,
       required: true,
@@ -41,6 +37,11 @@ const TaskSchema = new mongoose.Schema(
         message: "Status must be either pending, inProgress, or completed",
       },
       default: "pending",
+    },
+    description: {
+      type: String,
+      required: [true, "Description is required"],
+      trim: true,
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -52,4 +53,3 @@ const TaskSchema = new mongoose.Schema(
 );
 
 export const Task = mongoose.model("Task", TaskSchema);
-
