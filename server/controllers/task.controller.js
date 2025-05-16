@@ -3,6 +3,11 @@ import { User } from "../models/user.model.js";
 
 export const getTasks = async (req, res) => {
   try {
+    const tasks = await Task.find({ user: req.user._id });
+    return res.status(200).json({
+      success: true,
+      tasks,
+    });
   } catch (error) {
     console.error("Error in getting All Tasks: ", error.message);
     return res.status(500).json({
@@ -68,7 +73,8 @@ export const createTask = async (req, res) => {
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        message: "Duplicate key error: A task with the same title already exists",
+        message:
+          "Duplicate key error: A task with the same title already exists",
       });
     }
     console.error("Error in Creating Task: ", error.message);
@@ -98,4 +104,3 @@ export const deleteTask = async (req, res) => {
     });
   }
 };
-

@@ -198,6 +198,7 @@ const loginUser = async (req, res) => {
           email: user.email,
           profilePic: profilePicUrl,
           coverImage: coverImageUrl,
+          token: tokenForLogin,
         },
       });
   } catch (error) {
