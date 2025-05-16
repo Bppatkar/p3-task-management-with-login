@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import { useEffect, useState } from "react";
+const TaskDetails = lazy(() => import("./components/TaskDetails.jsx"));
 
 const Login = lazy(() => import("./components/Login"));
 const Register = lazy(() => import("./components/Register.jsx"));
@@ -76,6 +77,7 @@ function App() {
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route path="/register" element={<Register />} />
             <Route path="/change-pass" element={<ChangedPassword />} />
+            <Route path="/task/:id" element={<TaskDetails />} />
           </Routes>
         </Suspense>
       </main>
@@ -84,4 +86,3 @@ function App() {
 }
 
 export default App;
-

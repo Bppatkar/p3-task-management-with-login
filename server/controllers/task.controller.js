@@ -16,16 +16,34 @@ export const getTasks = async (req, res) => {
     });
   }
 };
+
 export const getTask = async (req, res) => {
   try {
+    const task = await Task.findOne({
+      _id: req.params.id,
+      user: req.user._id
+    });
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      task,
+    });
   } catch (error) {
-    console.error("Error in geting Task: ", error.message);
+    console.error("Error in getting Task: ", error.message);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
     });
   }
 };
+
 export const createTask = async (req, res) => {
   try {
     const { title, startingDate, dueDate, status, description } = req.body;
@@ -36,7 +54,6 @@ export const createTask = async (req, res) => {
       });
     }
 
-    // Check for existing task with same title for this user
     const existingTask = await Task.findOne({
       title,
       user: req.user._id,
@@ -49,7 +66,6 @@ export const createTask = async (req, res) => {
       });
     }
 
-    // Create the task with user reference
     const task = await Task.create({
       title,
       startingDate,
@@ -59,7 +75,6 @@ export const createTask = async (req, res) => {
       user: req.user._id,
     });
 
-    // Add task to user's tasks array
     await User.findByIdAndUpdate(req.user._id, {
       $push: { tasks: task._id },
     });
@@ -73,8 +88,7 @@ export const createTask = async (req, res) => {
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        message:
-          "Duplicate key error: A task with the same title already exists",
+        message: "Duplicate key error: A task with the same title already exists",
       });
     }
     console.error("Error in Creating Task: ", error.message);
@@ -84,8 +98,38 @@ export const createTask = async (req, res) => {
     });
   }
 };
+
 export const updateTask = async (req, res) => {
   try {
+    const { title, startingDate, dueDate, status, description } = req.body;
+    
+    const updatedTask = await Task.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user: req.user._id
+      },
+      {
+        title,
+        startingDate,
+        dueDate,
+        status,
+        description,
+      },
+      { new: true }
+    );
+
+    if (!updatedTask) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Task updated successfully",
+      task: updatedTask,
+    });
   } catch (error) {
     console.error("Error in Updating Task: ", error.message);
     return res.status(500).json({
@@ -94,8 +138,29 @@ export const updateTask = async (req, res) => {
     });
   }
 };
+
 export const deleteTask = async (req, res) => {
   try {
+    const deletedTask = await Task.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id
+    });
+
+    if (!deletedTask) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
+
+    await User.findByIdAndUpdate(req.user._id, {
+      $pull: { tasks: deletedTask._id },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Task deleted successfully",
+    });
   } catch (error) {
     console.error("Error in Deleting Task: ", error.message);
     return res.status(500).json({

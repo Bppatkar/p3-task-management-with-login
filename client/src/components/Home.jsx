@@ -18,13 +18,12 @@ const Home = ({ isLoggedIn }) => {
               credentials: "include",
             }
           );
-          // console.log("Fetch tasks response:", response);
+          
           if (!response.ok) {
             throw new Error("Failed to fetch tasks");
           }
 
           const data = await response.json();
-          // console.log(data.tasks);
           setTasks(data.tasks || []);
         } catch (err) {
           setError(err.message);
@@ -95,30 +94,33 @@ const Home = ({ isLoggedIn }) => {
                           if (status === "In Progress") {
                             return task.status === "inProgress";
                           }
-                          return (
-                            task.status.toLowerCase() === status.toLowerCase()
-                          );
+                          return task.status.toLowerCase() === status.toLowerCase();
                         })
                         .map((task) => (
                           <li
                             key={task._id}
-                            className="px-4 py-3 flex justify-between items-center"
+                            className="px-4 py-3 flex justify-between items-center hover:bg-gray-50"
                           >
-                            <div className="flex items-center">
-                              <span
-                                className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusStyle(
-                                  task.status
-                                )}`}
-                              >
-                                {formatStatus(task.status)}
+                            <Link 
+                              to={`/task/${task._id}`} 
+                              className="w-full flex justify-between items-center"
+                            >
+                              <div className="flex items-center">
+                                <span
+                                  className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusStyle(
+                                    task.status
+                                  )}`}
+                                >
+                                  {formatStatus(task.status)}
+                                </span>
+                                <span className="text-gray-600 ml-2">
+                                  {task.title}
+                                </span>
+                              </div>
+                              <span className="text-gray-600">
+                                {formatDate(task.dueDate)}
                               </span>
-                              <span className="text-gray-600 ml-2">
-                                {task.title}
-                              </span>
-                            </div>
-                            <span className="text-gray-600">
-                              {formatDate(task.dueDate)}
-                            </span>
+                            </Link>
                           </li>
                         ))}
                     </ul>
