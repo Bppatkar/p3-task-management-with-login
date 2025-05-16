@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8000",
+        target: "https://p3-task-management-with-login.onrender.com",
         changeOrigin: true,
       },
     },
